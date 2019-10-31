@@ -1,0 +1,26 @@
+{% load i18n %}
+
+{% if payment_info %}
+    <dl class="dl-horizontal">
+        {% if "txId" in payment_info %}
+            <dt>{% trans "Transaction ID" %}</dt>
+            <dd>{{ payment_info.txId }}</dd>
+        {% endif %}
+        <dt>{% trans "Payment state" %}</dt>
+        <dd>{{ payment_info.status }}</dd>
+        {% if "message" in payment_info %}
+            <dt>{% trans "Message" %}</dt>
+            <dd>{{ payment_info.message }}</dd>
+        {% endif %}
+        {% if "payMethod" in payment_info %}
+            <dt>{% trans "Payment type" %}</dt>
+            <dd>
+                <i class="fa fa-cc-{{ payment_info.payMethod|lower }}" title="{{ payment_info.payMethod }}"></i>
+            </dd>
+        {% endif %}
+        {% if "paymentRef" in payment_info %}
+            <dt>{% trans "Payment Reference" %}</dt>
+            <dd>{{ payment_info.paymentRef }}</dd>
+        {% endif %}
+    </dl>
+{% endif %}

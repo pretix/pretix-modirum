@@ -1,0 +1,3 @@
+recursive-include pretix_modirum/static *
+recursive-include pretix_modirum/templates *
+recursive-include pretix_modirum/locale *
