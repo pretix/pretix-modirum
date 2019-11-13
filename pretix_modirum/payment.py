@@ -7,7 +7,6 @@ from django import forms
 from django.http import HttpRequest
 from django.template.loader import get_template
 from django.utils.translation import ugettext_lazy as _  # NoQA
-from i18nfield.strings import LazyI18nString
 from pretix.base.models import Order, OrderPayment
 from pretix.base.payment import BasePaymentProvider
 from pretix.multidomain.urlreverse import build_absolute_uri, eventreverse
@@ -17,10 +16,6 @@ class ModirumPaymentProvider(BasePaymentProvider):
     identifier = 'modirum'
     verbose_name = _('Credit card via Modirum')
     public_name = _('Credit card')
-
-    @property
-    def public_name(self):
-        return str(self.settings.get('public_name', as_type=LazyI18nString))
 
     @property
     def settings_form_fields(self) -> dict:
