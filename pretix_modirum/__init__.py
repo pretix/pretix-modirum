@@ -15,7 +15,7 @@ class PluginApp(PluginConfig):
         author = 'Martin Gross'
         description = ugettext_lazy('Integration for payment providers based on the Modirum platform')
         visible = True
-        version = '1.0.1'
+        version = '1.0.2'
         compatibility = "pretix>=2.7.0"
 
     def ready(self):
