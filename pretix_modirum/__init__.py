@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import gettext_lazy
 
 try:
     from pretix.base.plugins import PluginConfig
@@ -11,9 +11,9 @@ class PluginApp(PluginConfig):
     verbose_name = 'Modirum payments for pretix'
 
     class PretixPluginMeta:
-        name = ugettext_lazy('Modirum payments for pretix')
+        name = gettext_lazy('Modirum payments for pretix')
         author = 'Martin Gross'
-        description = ugettext_lazy('Integration for payment providers based on the Modirum platform')
+        description = gettext_lazy('Integration for payment providers based on the Modirum platform')
         visible = True
         version = '1.0.2'
         compatibility = "pretix>=2.7.0"

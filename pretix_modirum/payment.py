@@ -6,7 +6,7 @@ from decimal import Decimal
 from django import forms
 from django.http import HttpRequest
 from django.template.loader import get_template
-from django.utils.translation import ugettext_lazy as _  # NoQA
+from django.utils.translation import gettext_lazy as _  # NoQA
 from pretix.base.models import Order, OrderPayment
 from pretix.base.payment import BasePaymentProvider
 from pretix.multidomain.urlreverse import build_absolute_uri, eventreverse
