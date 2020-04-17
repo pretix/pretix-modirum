@@ -25,7 +25,7 @@ cmdclass = {
 
 setup(
     name='pretix-modirum',
-    version='1.0.2',
+    version='1.0.3',
     description='Integration for payment providers based on the Modirum platform',
     long_description=long_description,
     url='https://code.rami.io/pretix/pretix-modirum',
