@@ -1,11 +1,11 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 
 from .views import RedirectView, ReturnView
 
 event_patterns = [
-    url(r'^modirum/', include([
-        url(r'^redirect/(?P<order>[^/]+)/(?P<hash>[^/]+)/(?P<payment>[^/]+)/$', RedirectView.as_view(),
+    path('modirum/', include([
+        path('redirect/<str:order>/<str:hash>/<str:payment>/', RedirectView.as_view(),
             name='redirect'),
-        url(r'^return/(?P<order>[^/]+)/(?P<hash>[^/]+)/(?P<payment>[^/]+)/$', ReturnView.as_view(), name='return'),
+        path('return/<str:order>/<str:hash>/<str:payment>/', ReturnView.as_view(), name='return'),
     ])),
 ]
