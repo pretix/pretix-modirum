@@ -3,6 +3,7 @@ from distutils.command.build import build
 
 from django.core import management
 from setuptools import setup, find_packages
+from pretix_modirum import __version__
 
 
 try:
@@ -25,7 +26,7 @@ cmdclass = {
 
 setup(
     name='pretix-modirum',
-    version='1.0.3',
+    version=__version__,
     description='Integration for payment providers based on the Modirum platform',
     long_description=long_description,
     url='https://code.rami.io/pretix/pretix-modirum',
