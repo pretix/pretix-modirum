@@ -18,7 +18,7 @@ class PluginApp(PluginConfig):
         description = gettext_lazy('Integration for payment providers based on the Modirum platform')
         visible = True
         version = __version__
-        compatibility = "pretix>=2.7.0"
+        compatibility = "pretix>=4.20.0"
 
     def ready(self):
         from . import signals  # NOQA
