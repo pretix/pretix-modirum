@@ -1,4 +1,3 @@
-import base64
 import copy
 import hashlib
 
@@ -14,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from pretix.base.models import Order, OrderPayment, Quota
 from pretix.multidomain.urlreverse import eventreverse
+from .payment import ModirumPaymentProvider
 
 
 class ModirumOrderView:
@@ -51,10 +51,7 @@ class RedirectView(ModirumOrderView, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['url'] = self.order.event.settings.get('payment_modirum_test_gateway_url') if self.order.testmode \
             else self.order.event.settings.get('payment_modirum_prod_gateway_url')
-        ctx['params'] = self.pprov.sign_parameters(
-            self.pprov.params_for_payment(self.payment, self.request),
-            self.order
-        )
+        ctx['params'] = self.pprov.params_for_payment(self.payment, self.request)
         return ctx
 
 
@@ -69,6 +66,11 @@ class ReturnView(ModirumOrderView, View):
 
     def post(self, request, *args, **kwargs):
         if not self.validate_digest(request, self.pprov):
+            messages.error(self.request, _('Sorry, we could not validate the payment result. Please try again or '
+                                           'contact the event organizer to check if your payment was successful.'))
+            return self._redirect_to_order()
+
+        if request.POST.get("orderid") != self.pprov.get_modirum_order_id(self.payment):
             messages.error(self.request, _('Sorry, we could not validate the payment result. Please try again or '
                                            'contact the event organizer to check if your payment was successful.'))
             return self._redirect_to_order()
@@ -97,22 +99,11 @@ class ReturnView(ModirumOrderView, View):
             'secret': self.order.secret
         }) + ('?paid=yes' if self.order.status == Order.STATUS_PAID else ''))
 
-    def validate_digest(self, request, prov):
+    def validate_digest(self, request, prov: ModirumPaymentProvider):
         params = copy.deepcopy(request.POST)
         if 'digest' in params:
             postdigest = params.pop('digest')[0]
-
-            digest = ''.join(params.values())
-
-            if self.order.testmode:
-                digest += self.order.event.settings.payment_modirum_test_gateway_secret
-            else:
-                digest += self.order.event.settings.payment_modirum_prod_gateway_secret
-
-            digest = base64.b64encode(
-                hashlib.sha256(digest.encode()).digest()
-            ).decode()
-
+            digest = prov.generate_digest(params)
             return digest == postdigest
 
         return False

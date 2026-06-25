@@ -111,28 +111,28 @@ class ModirumPaymentProvider(BasePaymentProvider):
             'hash': hashlib.sha1(payment.order.secret.lower().encode()).hexdigest(),
         })
 
-    def sign_parameters(self, params: OrderedDict, order: Order) -> OrderedDict:
+    def generate_digest(self, params: OrderedDict, order: Order) -> str:
         digest = ''.join(params.values())
+
         if order.testmode:
             digest += order.event.settings.payment_modirum_test_gateway_secret
         else:
             digest += order.event.settings.payment_modirum_prod_gateway_secret
 
-        digest = base64.b64encode(
+        return base64.b64encode(
             hashlib.sha256(digest.encode()).digest()
         ).decode()
 
-        params['digest'] = digest
-
-        return params
+    def get_modirum_order_id(self, payment):
+        return '{event}{code}P{payment}'.format(event=self.event.slug.upper(), code=payment.order.code, payment=payment.local_id)
 
     def params_for_payment(self, payment, request):
         hash = hashlib.sha1(payment.order.secret.lower().encode()).hexdigest()
-        return OrderedDict({
+        params = OrderedDict({
             'version': '2',
             'mid': self.settings.get('test_gateway_mid') if payment.order.testmode else self.settings.get('prod_gateway_mid'),
             'lang': payment.order.locale[:2],
-            'orderid': '{event}{code}P{payment}'.format(event=self.event.slug.upper(), code=payment.order.code, payment=payment.local_id),
+            'orderid': self.get_modirum_order_id(payment),
             'orderDesc': _('Order {event}-{code}').format(event=self.event.slug.upper(), code=payment.order.code),
             'orderAmount': str(payment.amount),
             'currency': self.event.currency,
@@ -155,3 +155,5 @@ class ModirumPaymentProvider(BasePaymentProvider):
             'var2': self.event.slug,
             'var3': self.event.organizer.slug
         })
+        params['digest'] = self.generate_digest(params, payment.order)
+        return params
